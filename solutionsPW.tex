@@ -1,0 +1,40 @@
+\documentclass[11pt]{article}
+\usepackage{hyperref}
+\usepackage{graphicx}
+\usepackage[utf8]{inputenc}
+
+\graphicspath{ {./imgs/} }
+
+\usepackage{makeidx}
+
+\title{Solutions for interview questions}
+\author{Piotr Wójcik}
+%\date{}
+
+%\makeindex
+
+\begin{document}
+\maketitle
+\section{Coding question}
+The solution is a straightforward application of a breadth-first search algorithm (BFS). For every unprocessed foreground pixel $v$, 
+we run a graph traversal from that pixel marking all pixels in a conected component containing $v$. For the purpose of this task, we assume $8$-connectivity.
+The solutions takes both $\mathcal{O}(hw)$ time and $\mathcal{O}(hw)$ space, where $h$ and $w$ describe input array height and width respectively. 
+The code can be found in my \href{https://github.com/piotrmwojcik/interview_questions}{GitHub repository}. A set of unit tests is also provided.
+\section{Data analysis question}
+The problem with histologic imaging data used for training of deep-learning models is the heterogenenity of visual appearance (due to the differences in specimen acqusition, staining and scanner calibration) between submitting sites. 
+All these factors contribute to the difficulty of generalization of deep learning to the previously unseen data. When a domain shift between data sets exists, machine learning algorithms may be biased towards site-specific visual signatures instead of disease-specific ones. 
+Here, we will provide an overview of existing methods for histologic data standarization and assess an optimal strategy for the data set in question.
+\begin{figure}
+\centering
+\includegraphics[scale=0.25]{different_scanners.png}
+\caption{Tissue patches ilustrating scanner-induced domain gap}
+\end{figure}
+\subsection{Assumptions about data sets}
+In the problem, we are given three batches of tissue images collected from $3$ different sites and representing $5$ different conditions.
+As the histologic examination of hematoxylin and eosin-stained images is a standard in digital pathology, we can assume that 
+\begin{thebibliography}{99}
+\bibitem{auber21} M.~Aubreville, C.~Bertram, M.~Veta, R.~Klopfleisch, N.~Stathonikos, K.~Breininger, N.~ter~Hoeve, F.~Ciompi, A.~Maier:
+ \emph{Quantifying the Scanner-Induced Domain Gap in Mitosis Detection},
+arXiv preprint arXiv:2103.16515 (2021)
+\end{thebibliography}
+\end{document}
