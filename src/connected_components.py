@@ -7,7 +7,6 @@ def connected_components(A: np.ndarray) -> np.ndarray:
     """Breadth-first search algorithm applied for finding connected components in a grid."""
 
     rows, columns = A.shape
-    assert rows + columns > 0, "Array should not be empty"
 
     result = np.zeros_like(A)
     component: int = 0
@@ -16,7 +15,7 @@ def connected_components(A: np.ndarray) -> np.ndarray:
 
     for i in range(rows):
         for j in range(columns):
-            if A[i][j] == 0 or result[i][j] != 0:
+            if A[i][j] != 1 or result[i][j] != 0:
                 continue
             component += 1
             Q.append((i, j))
