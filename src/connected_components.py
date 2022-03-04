@@ -4,8 +4,10 @@ from collections import deque
 
 
 def connected_components(A: np.ndarray) -> np.ndarray:
+    """Breadth-first search algorithm applied for finding connected components in a grid."""
+
     rows, columns = A.shape
-    assert rows + columns != 0, "Array should not be empty"
+    assert rows + columns > 0, "Array should not be empty"
 
     result = np.zeros_like(A)
     component: int = 0
@@ -30,11 +32,3 @@ def connected_components(A: np.ndarray) -> np.ndarray:
                             Q.append((ii, jj))
 
     return result
-
-
-if __name__ == '__main__':
-    A0 = np.array([[0, 0, 0], [0, 1, 0], [0, 0, 0]])
-    print(connected_components(A0))
-
-    A1 = np.array([[1, 1, 0], [0, 0, 1], [1, 0, 0]])
-    print(connected_components(A1))
