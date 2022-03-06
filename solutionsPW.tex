@@ -1,6 +1,7 @@
 \documentclass[11pt]{article}
 \usepackage{hyperref}
 \usepackage{graphicx}
+\usepackage{float}
 \usepackage[utf8]{inputenc}
 
 \graphicspath{ {./imgs/} }
@@ -28,7 +29,7 @@ Here, we will assess an optimal strategy for the data set in question using some
 \centering
 \includegraphics[scale=0.25]{different_scanners.png}
 				\caption{Tissue patches ilustrating scanner-induced domain gap \cite{auber21}}
-\end{figure}
+end{figure}
 \subsection{Assumptions about data sets}
 In the problem, we are given three batches of tissue images collected from $3$ different sites and representing $5$ different conditions.
 As the histologic examination of hematoxylin and eosin-stained (H\&E) images is a standard in digital pathology, we can assume that the data set comprises of stained SVS images.
@@ -39,15 +40,24 @@ the region of interest and no more than a half of the tile area should constitut
 Till the end of this review we will work under the assumption that the algorithm for visual signatures detection is a CNN-based neural network, \textbf{trained and evaluated} on the datasets mentioned in the question.
 \\ Much research has been devoted to estimate the impact of the stain color normalization on the ML generalization performance. Following the results of Khan et al, who proved that CNN clasifiers overperform when 
 trained and tested on the data set homogenized by the Reinhard normalization, we decided to apply this colour transfer method to \textbf{all} images.
-\begin{figure}[h]
+\begin{figure}[H]
 \centering
 \includegraphics[scale=0.35]{baseline.png}
 				\caption{Original images acquired with the help of different staining methods \cite{khan}.}
-\includegraphics[scale=0.35]{reinhard.png}
-				\caption{A template image (first from the left) is used to transfer stain color style \cite{khan}.}
-\			
+%\label{fig:baseline}
 \end{figure}
-The goal of Reinhard normalization
+
+Intuitively, the goal of Reinhard normalization method is to make a synthetic images take on another image's look \cite{reinhard}. More formally, we proceed by converting RGB image color space to 
+the so called $l \alpha \beta$ color space, which minimizes correlation between channels for many natural scenes \cite{reinhard}. 
+
+%from \ref{fig:baseline}. 
+				
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.35]{reinhard.png}
+				\caption{Reinhard normalization of images. A template image (first from the left) is used to transfer stain color style \cite{khan}.}			
+\end{figure}
 \subsection{Color augmentation}
 \subsection{Evaluation}
 The patches should be distributed into training, cross-validation,
