@@ -17,24 +17,59 @@
 \maketitle
 \section{Coding question}
 The solution is a straightforward application of a breadth-first search algorithm (BFS). For every unprocessed foreground pixel $v$, 
-we run a graph traversal from that pixel marking all pixels in a conected component containing $v$. For the purpose of this task, we assume $8$-connectivity.
+we run a graph traversal from that pixel marking all pixels in a connected component containing $v$. For the purpose of this task, we assume $8$-connectivity.
 The solutions takes both $\mathcal{O}(hw)$ time and $\mathcal{O}(hw)$ space, where $h$ and $w$ describe input array height and width respectively. 
 The code can be found in my \href{https://github.com/piotrmwojcik/interview_questions}{GitHub repository}. A set of unit tests is also provided.
 \section{Data analysis question}
-The problem with histologic imaging data used for training of deep-learning models is the heterogenenity of visual appearance (due to the differences in specimen acqusition, staining and scanner calibration) between submitting sites. 
+The problem with histologic imaging data used for training of deep-learning models is the heterogeneity of visual appearance (due to the differences in specimen acqusition, staining and scanner calibration) between submitting sites. 
 All these factors contribute to the difficulty of generalization of deep learning to the previously unseen data. When a domain shift between data sets exists, machine learning algorithms may be biased towards site-specific visual signatures instead of disease-specific ones. 
-Here, we will provide an overview of existing methods for histologic data standarization and assess an optimal strategy for the data set in question.
-\begin{figure}
+Here, we will assess an optimal strategy for the data set in question using some of the state-of-art methods.
+\begin{figure}[h]
 \centering
 \includegraphics[scale=0.25]{different_scanners.png}
-\caption{Tissue patches ilustrating scanner-induced domain gap}
+				\caption{Tissue patches ilustrating scanner-induced domain gap \cite{auber21}}
 \end{figure}
 \subsection{Assumptions about data sets}
 In the problem, we are given three batches of tissue images collected from $3$ different sites and representing $5$ different conditions.
-As the histologic examination of hematoxylin and eosin-stained images is a standard in digital pathology, we can assume that 
+As the histologic examination of hematoxylin and eosin-stained (H\&E) images is a standard in digital pathology, we can assume that the data set comprises of stained SVS images.
+Unless given images are already in a format accessible to deep neural networks (which will be used to represent disease visual signatures), for example, square JPEG bitmaps of a size 512 $\times$ 512,
+we need to perform testellation of the whole slide images (WSI) into tiles. According to the preprocessing methodology described in \cite{aachen20}, each tile should have its center within 
+the region of interest and no more than a half of the tile area should constitute a background. We resample all tiles to $0.5$ $\mu$m/px.
+\subsection{Stain normalization}
+Till the end of this review we will work under the assumption that the algorithm for visual signatures detection is a CNN-based neural network, \textbf{trained and evaluated} on the datasets mentioned in the question.
+\\ Much research has been devoted to estimate the impact of the stain color normalization on the ML generalization performance. Following the results of Khan et al, who proved that CNN clasifiers overperform when 
+trained and tested on the data set homogenized by the Reinhard normalization, we decided to apply this colour transfer method to \textbf{all} images.
+\begin{figure}[h]
+\centering
+\includegraphics[scale=0.35]{baseline.png}
+				\caption{Original images acquired with the help of different staining methods \cite{khan}.}
+\includegraphics[scale=0.35]{reinhard.png}
+				\caption{A template image (first from the left) is used to transfer stain color style \cite{khan}.}
+\			
+\end{figure}
+The goal of Reinhard normalization
+\subsection{Color augmentation}
+\subsection{Evaluation}
+The patches should be distributed into training, cross-validation,
+internal test, and external test set \cite{khan}. This distribution will be repeated three times for three source providers (data centers): 
+in the iteration $i$, $i$-th batch will serve as an external test set and be excluded from the other sets. 
+
 \begin{thebibliography}{99}
 \bibitem{auber21} M.~Aubreville, C.~Bertram, M.~Veta, R.~Klopfleisch, N.~Stathonikos, K.~Breininger, N.~ter~Hoeve, F.~Ciompi, A.~Maier:
- \emph{Quantifying the Scanner-Induced Domain Gap in Mitosis Detection},
-arXiv preprint arXiv:2103.16515 (2021)
+\emph{Quantifying the Scanner-Induced Domain Gap in Mitosis Detection},
+\\ arXiv preprint arXiv:2103.16515 (2021)
+\bibitem{aachen20} 
+H.~Muti, C.~Loeffler, Amelie Echle, L.~Heij, R.~D.~Bülow, Jeremias Krause, Laura Broderius, J.~Niehues, G.~Liapi, P.~Boor, H.~Grabsch, S.~Kochanny, A.~Pearson, J.~Kather:
+\emph{The Aachen Protocol for Deep Learning Histopathology: A hands-on guide for data preprocessing},
+\\ bioRxiv preprint: https://doi.org/10.1101/2021.11.19.469139 (2020)
+\bibitem{khan}
+A.~Khan, M.~Atzorib, S.~Otalorab, V.~Andrearczyk, H.~Muller:
+\emph{Generalizing Convolution Neural Networks on Stain Color Heterogeneous Data for Computational Pathology},
+\\ Proceedings Volume 11320, Medical Imaging 2020: Digital Pathology; 113200R (2020)
+\bibitem{reinhard}
+E.~Reinhard, M.~Ashikhmin, B.~Gooch, P.~Shirley:
+ \emph{Color transfer between images},
+\\ IEEE Computer
+Graphics and Applications \textbf{21}(5), 34-41 (2001)
 \end{thebibliography}
 \end{document}
