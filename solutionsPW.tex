@@ -3,6 +3,17 @@
 \usepackage{graphicx}
 \usepackage{float}
 \usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{subcaption}
+
+\usepackage{geometry}
+ \geometry{
+ a4paper,
+ total={170mm,257mm},
+ left=20mm,
+ top=20mm,
+ bottom=20mm
+ }
 
 \graphicspath{ {./imgs/} }
 
@@ -29,7 +40,7 @@ Here, we will assess an optimal strategy for the data set in question using some
 \centering
 \includegraphics[scale=0.25]{different_scanners.png}
 				\caption{Tissue patches ilustrating scanner-induced domain gap \cite{auber21}}
-end{figure}
+\end{figure}
 \subsection{Assumptions about data sets}
 In the problem, we are given three batches of tissue images collected from $3$ different sites and representing $5$ different conditions.
 As the histologic examination of hematoxylin and eosin-stained (H\&E) images is a standard in digital pathology, we can assume that the data set comprises of stained SVS images.
@@ -42,27 +53,48 @@ Till the end of this review we will work under the assumption that the algorithm
 trained and tested on the data set homogenized by the Reinhard normalization, we decided to apply this colour transfer method to \textbf{all} images.
 \begin{figure}[H]
 \centering
-\includegraphics[scale=0.35]{baseline.png}
+\includegraphics[scale=0.30]{baseline.png}
 				\caption{Original images acquired with the help of different staining methods \cite{khan}.}
-%\label{fig:baseline}
+\label{fig:baseline}
 \end{figure}
 
 Intuitively, the goal of Reinhard normalization method is to make a synthetic images take on another image's look \cite{reinhard}. More formally, we proceed by converting RGB image color space to 
-the so called $l \alpha \beta$ color space, which minimizes correlation between channels for many natural scenes \cite{reinhard}. 
-
-%from \ref{fig:baseline}. 
-				
+the so called $l \alpha \beta$ color space, which minimizes correlation between channels for many natural scenes \cite{reinhard}. Then, we scale the image by factors determined by the 
+ratios of standard deviations, apply some fine tuning and convert the result back to RGB. Details are described in the paper \cite{reinhard}.
+The core of the transformation from the source image ($I_{\text{src}}$) to the target image ($I_{\text{norm}}$) is described by the following equation:
+\[
+I_{\text{norm($l \alpha \beta$})} = 
+\frac{(I_{\text{src($l \alpha \beta$)}} - \mu_{\text{src($l \alpha \beta$)}}) \times \sigma_{\text{temp($l \alpha \beta$)}}}
+{\sigma_{\text{src($l \alpha \beta$)}} \times \mu_{\text{temp($l \alpha \beta$)}}}
+\]
+where $\mu_{\text{temp}}, \sigma_{\text{src}}$ are represeting mean and standard deviation of the template image.
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.30]{reinhard.png}
+				\caption{Reinhard normalization of images from fig. \ref{fig:baseline}. An arbitrary template image is used to transfer its stain color style to every other image \cite{khan}.}			
+\end{figure}
+Please note that the template image for the standarization is to be chosen arbitrary. 	
+\subsection{Color augmentation}
+Khan et al. \cite{khan} claim that the best performance is achieved when both stain normalization and color augmentation are combined together.
+In the paper \cite{khan} color variablity after stain normalization is achieved by modyfying both RGB and HSV (Hue, Saturation, Value) channels.
+Shifting and shuffling color channels as well as variating the brightness and the contrast provides us with additional training patches.
+See fig. $\ref{fig:aug}$.
 
 \begin{figure}[H]
 \centering
-\includegraphics[scale=0.35]{reinhard.png}
-				\caption{Reinhard normalization of images. A template image (first from the left) is used to transfer stain color style \cite{khan}.}			
+\includegraphics[scale=0.30]{aug.png}
+				\caption{An example of data augmentation, on the original images (a) and (e), by (b) RGB channel shuffle, (c)
+RGB channel shifting, (d) HSV channel shifting, (f) brightness, contrast, inversion operations on gray version,
+				(g) RGB inversion and symmetric operations and (h) brightness and contrast operations on RGB. (picture from paper \cite{khan})}			
+\label{fig:aug}
 \end{figure}
-\subsection{Color augmentation}
+
+
 \subsection{Evaluation}
 The patches should be distributed into training, cross-validation,
 internal test, and external test set \cite{khan}. This distribution will be repeated three times for three source providers (data centers): 
 in the iteration $i$, $i$-th batch will serve as an external test set and be excluded from the other sets. 
+
 
 \begin{thebibliography}{99}
 \bibitem{auber21} M.~Aubreville, C.~Bertram, M.~Veta, R.~Klopfleisch, N.~Stathonikos, K.~Breininger, N.~ter~Hoeve, F.~Ciompi, A.~Maier:
