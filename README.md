@@ -18,4 +18,4 @@ Activate the environment:
 
 Now, unit test suit can be launched by the following command:
 
-`PYTHONPATH=PYTHONPATH:src; python -m unittest -v tests/test_connected_components.py`
+`export PYTHONPATH=$PYTHONPATH:src; python -m unittest -v tests/test_connected_components.py`
